@@ -8,7 +8,7 @@ const config = {
     828: 1.81 / 2
   },
   sourceRoot: 'src',
-  outputRoot: 'dist',
+  outputRoot: process.env.BUILD_ENV === 'dev'?'dist':'dist_test',
   plugins: [],
   env: {
     BUILD_ENV: JSON.stringify(process.env.BUILD_ENV)

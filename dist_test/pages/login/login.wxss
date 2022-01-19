@@ -1,0 +1,42 @@
+.logintitle {
+  margin-top: 30%;
+  margin-left: 10%;
+  font-size: larger;
+}
+.inputNum,
+.inputpwd,
+.loginBtn {
+  margin-top: 10%;
+  margin-left: 10%;
+  width: 80%;
+}
+.loginBtn {
+  border-radius: 50rpx 50rpx 50rpx 50rpx;
+  color: #fff;
+  background-color: #FB841E;
+}
+.wechatBtn {
+  margin-top: 5%;
+  margin-left: 10%;
+  width: 80%;
+  border-radius: 50rpx 50rpx 50rpx 50rpx;
+  color: #fff;
+  background-color: #8cc540;
+}
+.signText {
+  margin-top: 2%;
+  margin-left: 10%;
+  font-size: small;
+}
+.foot {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: 20%;
+  margin-left: 10%;
+  font-size: small;
+}
+.foot .footText {
+  color: #FB841E;
+}
+

@@ -1,0 +1,188 @@
+.navbar {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  background-color: #fff;
+  text-align: center;
+}
+.navbar .userIcon {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+.navbar .navbarText {
+  margin-left: -25%;
+  -webkit-flex: 4;
+      -ms-flex: 4;
+          flex: 4;
+}
+#map {
+  width: 100%;
+  height: calc(100vh - 80rpx);
+  margin-top: 10rpx;
+}
+#map .container {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 400rpx;
+  background-color: #fff;
+  border-radius: 20rpx 20rpx 0 0;
+  -webkit-box-shadow: 1rpx 1rpx 20rpx #c5c5c5;
+          box-shadow: 1rpx 1rpx 20rpx #c5c5c5;
+  color: #ccc;
+}
+#map .container .from {
+  -webkit-flex: 3;
+      -ms-flex: 3;
+          flex: 3;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-left: 5%;
+  background-color: #fff;
+}
+#map .container .to {
+  -webkit-flex: 3;
+      -ms-flex: 3;
+          flex: 3;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  padding-left: 5%;
+}
+#map .predict {
+  -webkit-flex: 2;
+      -ms-flex: 2;
+          flex: 2;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  padding-left: 5%;
+  background-color: #fff;
+  font-size: small;
+  color: #000;
+}
+#map .confirm {
+  -webkit-flex: 3;
+      -ms-flex: 3;
+          flex: 3;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
+#map .return {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 60rpx;
+  background-color: white;
+  margin-left: 5%;
+  margin-top: 600rpx;
+  -webkit-box-shadow: 1rpx 1rpx 20rpx #c5c5c5;
+          box-shadow: 1rpx 1rpx 20rpx #c5c5c5;
+}
+#map .btn {
+  width: 90%;
+  height: 80%;
+  padding-left: 5%;
+  border-radius: 10rpx;
+  background-color: #FB841E;
+  color: #fff;
+}
+#map .calling {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  font-size: larger;
+  color: #000;
+  padding-left: 5%;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+#map .confirm-place {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  color: #5e5e5e;
+  padding-left: 5%;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: flex-start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
+#map .cancel-order {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+#map .coming {
+  -webkit-flex: 2;
+      -ms-flex: 2;
+          flex: 2;
+  font-size: large;
+  color: #000;
+  padding-top: 5%;
+  padding-left: 5%;
+}
+#map .tips {
+  font-size: smaller;
+  color: #5e5e5e;
+}
+#map .driver-info {
+  -webkit-flex: 3;
+      -ms-flex: 3;
+          flex: 3;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 96%;
+  margin-left: 2%;
+  border-radius: 20rpx;
+  -webkit-box-shadow: 1rpx 1rpx 20rpx #c5c5c5;
+          box-shadow: 1rpx 1rpx 20rpx #c5c5c5;
+}
+#map .text-info {
+  -webkit-flex: 3;
+      -ms-flex: 3;
+          flex: 3;
+  padding-left: 5%;
+}
+#map .img-info {
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+}
+

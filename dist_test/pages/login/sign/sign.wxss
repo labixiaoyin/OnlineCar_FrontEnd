@@ -1,0 +1,26 @@
+.title {
+  margin-top: 20%;
+  margin-left: 10%;
+  font-size: larger;
+}
+.inputNum,
+.inputpwd,
+.loginBtn {
+  margin-top: 10%;
+  margin-left: 10%;
+  width: 80%;
+}
+.loginBtn {
+  border-radius: 50rpx 50rpx 50rpx 50rpx;
+  color: #fff;
+  background-color: #fb841e;
+}
+.wechatBtn {
+  margin-top: 5%;
+  margin-left: 10%;
+  width: 80%;
+  border-radius: 50rpx 50rpx 50rpx 50rpx;
+  color: #fff;
+  background-color: #8cc540;
+}
+

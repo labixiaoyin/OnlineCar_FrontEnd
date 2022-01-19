@@ -11,15 +11,15 @@
       :longitude="longitude"
       :latitude="latitude"
       scale="14"
-      :markers="markers"
       :show-location="true"
       @regionchange="regionchange"
       @markertap="markertap"
     >
-      <view class="return" @tap="toCurrent">
+      <view class="return">
         <image
           src="../images/current-location.png"
           style="width: 30px; height: 30px"
+          @tap="toCurrent"
         ></image>
       </view>
       <!-- 打车前 -->
@@ -66,18 +66,29 @@
       <view class="container" v-show="status == 2">
         <view class="driver-info">
           <view class="text-info">
-            <view style="font-size: 22px; color: #000">{{driver.licenseTag}}</view>
-            <view style="font-size: 16px; color: rgb(94, 94, 94)">{{driver.carInfo}}</view>
-            <view style="font-size: 14px">{{driver.name}} {{driver.score}} {{driver.orderNum}}单</view>
+            <view style="font-size: 22px; color: #000">{{
+              driver.licenseTag
+            }}</view>
+            <view style="font-size: 16px; color: rgb(94, 94, 94)">{{
+              driver.carInfo
+            }}</view>
+            <view style="font-size: 14px"
+              >{{ driver.name }} {{ driver.score }}
+              {{ driver.orderNum }}单</view
+            >
           </view>
           <view class="img-info">
-            <image :src="driver.avatar" style="width: 50px;height: 50px;border-radius: 50%;" />
+            <image
+              :src="driver.avatar"
+              style="width: 50px; height: 50px; border-radius: 50%"
+            />
           </view>
         </view>
         <view class="coming">
           司机正在全力赶来，请避开拥挤人群等候
-          <view class="tips">请前往
-            <text style="color: #fb841e">{{startPlace.name}}</text>
+          <view class="tips"
+            >请前往
+            <text style="color: #fb841e">{{ startPlace.name }}</text>
             上车
           </view>
         </view>
@@ -86,12 +97,22 @@
       <view class="container" v-show="status == 3">
         <view class="driver-info">
           <view class="text-info">
-            <view style="font-size: 22px; color: #000">{{driver.licenseTag}}</view>
-            <view style="font-size: 16px; color: rgb(94, 94, 94)">{{driver.carInfo}}</view>
-            <view style="font-size: 14px">{{driver.name}} {{driver.score}} {{driver.orderNum}}单</view>
+            <view style="font-size: 22px; color: #000">{{
+              driver.licenseTag
+            }}</view>
+            <view style="font-size: 16px; color: rgb(94, 94, 94)">{{
+              driver.carInfo
+            }}</view>
+            <view style="font-size: 14px"
+              >{{ driver.name }} {{ driver.score }}
+              {{ driver.orderNum }}单</view
+            >
           </view>
           <view class="img-info">
-            <image :src="driver.avatar" style="width: 50px;height: 50px;border-radius: 50%;" />
+            <image
+              :src="driver.avatar"
+              style="width: 50px; height: 50px; border-radius: 50%"
+            />
           </view>
         </view>
         <view class="coming">
@@ -100,7 +121,7 @@
         </view>
       </view>
       <!-- 到达目的地 -->
-       <view class="container" v-show="status == 4">
+      <view class="container" v-show="status == 4">
         <view class="calling"> 已到达目的地 </view>
         <view class="confirm-place">
           从
@@ -115,7 +136,7 @@
             >{{ startPlace.name }}</text
           >
           到
-           <text
+          <text
             style="
               width: 40%;
               color: #fb841e;
@@ -140,7 +161,7 @@ import {
   set as setGlobalData,
   get as getGlobalData,
 } from "../../utils/global_data";
-import { baseUrl } from "../../utils/baseurl"
+import { baseUrl } from "../../utils/baseurl";
 const mapCtx = Taro.createMapContext("map");
 export default {
   data() {
@@ -173,19 +194,18 @@ export default {
       },
       driver: {
         id: 0,
-        name: '王平',
-        score: '5.0',
-        licenseTag: '苏AD76571',
-        carInfo: '白色 长安逸动新能源',
+        name: "王平",
+        score: "5.0",
+        licenseTag: "苏AD76571",
+        carInfo: "白色 长安逸动新能源",
         orderNum: 2000,
-        avatar: '../images/usericon.png'
-      }
+        avatar: "../images/usericon.png",
+      },
     };
   },
   onLoad() {
     this.toCurrent();
     this.getCurrentUser();
-    console.log("baseUrl", baseUrl);
   },
   methods: {
     toProfile() {
@@ -199,19 +219,25 @@ export default {
         });
       }
     },
-    getCurrentUser(){
-      const token = getGlobalData('token')
+    getCurrentUser() {
+      const token = getGlobalData("token");
       Taro.request({
-        url: baseUrl+'travel/passenger/currentPAX',
-        method: 'GET',
-        header:{
-          'Authorization': token
-        }
-      })
-      .then((res)=>{
+        url: baseUrl + "travel/passenger/currentPAX",
+        method: "GET",
+        header: {
+          Authorization: token,
+        },
+      }).then((res) => {
         console.log(res.data);
-        setGlobalData('isLogin', true)
-      })
+        // 登录成功，修改登录状态以及用户信息
+        if (res.data.success) {
+          setGlobalData("isLogin", true);
+        } else {
+          // 登录失败，清空token并修改登录状态
+          Taro.setStorageSync('token', '');
+          setGlobalData("isLogin", false);
+        }
+      });
     },
     // 移动区域 type: begin/end
     regionchange(e) {
@@ -275,7 +301,7 @@ export default {
     cancelOrder() {
       this.status = 0;
     },
-    payMoney(){},
+    payMoney() {},
   },
 };
 </script>
