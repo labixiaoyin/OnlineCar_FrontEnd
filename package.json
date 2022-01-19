@@ -9,7 +9,9 @@
     "css": "less"
   },
   "scripts": {
-    "build:weapp": "taro build --type weapp",
+    "build:weapp:dev": "cross-env BUILD_ENV=dev taro build --type weapp",
+    "build:weapp:test": "cross-env BUILD_ENV=test taro build --type weapp",
+    "build:weapp:prod": "cross-env BUILD_ENV=prod taro build --type weapp",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",
@@ -18,7 +20,9 @@
     "build:qq": "taro build --type qq",
     "build:jd": "taro build --type jd",
     "build:quickapp": "taro build --type quickapp",
-    "dev:weapp": "npm run build:weapp -- --watch",
+    "dev:weapp": "npm run build:weapp:dev -- --watch",
+    "test:weapp": "npm run build:weapp:test -- --watch",
+    "prod:weapp": "npm run build:weapp:prod -- --watch",
     "dev:swan": "npm run build:swan -- --watch",
     "dev:alipay": "npm run build:alipay -- --watch",
     "dev:tt": "npm run build:tt -- --watch",
@@ -39,19 +43,20 @@
     "@tarojs/components": "3.3.20",
     "@tarojs/runtime": "3.3.20",
     "@tarojs/taro": "3.3.20",
-    "vue-template-compiler": "^2.5.0",
-    "vue": "^2.5.0"
+    "vue": "^2.5.0",
+    "vue-template-compiler": "^2.5.0"
   },
   "devDependencies": {
-    "@types/webpack-env": "^1.13.6",
-    "@tarojs/mini-runner": "3.3.20",
     "@babel/core": "^7.8.0",
+    "@tarojs/mini-runner": "3.3.20",
     "@tarojs/webpack-runner": "3.3.20",
+    "@types/webpack-env": "^1.13.6",
     "babel-preset-taro": "3.3.20",
-    "vue-loader": "^15.9.2",
-    "eslint-plugin-vue": "^6.x",
-    "eslint-config-taro": "3.3.20",
+    "cross-env": "^7.0.3",
     "eslint": "^6.8.0",
-    "stylelint": "9.3.0"
+    "eslint-config-taro": "3.3.20",
+    "eslint-plugin-vue": "^6.x",
+    "stylelint": "9.3.0",
+    "vue-loader": "^15.9.2"
   }
 }

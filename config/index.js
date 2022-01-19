@@ -10,6 +10,9 @@ const config = {
   sourceRoot: 'src',
   outputRoot: 'dist',
   plugins: [],
+  env: {
+    BUILD_ENV: JSON.stringify(process.env.BUILD_ENV)
+  },
   defineConstants: {
   },
   copy: {
@@ -42,6 +45,9 @@ const config = {
       }
     }
   },
+  defineConstants: {
+    LOCATION_APIKEY: JSON.stringify('FDLBZ-45FKG-SOVQ6-IRCA6-PGYJ5-5IBXY')
+  },
   h5: {
     publicPath: '/',
     staticDirectory: 'static',
@@ -65,6 +71,9 @@ const config = {
 module.exports = function (merge) {
   if (process.env.NODE_ENV === 'development') {
     return merge({}, config, require('./dev'))
+  }
+  if (process.env.NODE_ENV === 'test') {
+    return merge({}, config, require('./test'))
   }
   return merge({}, config, require('./prod'))
 }

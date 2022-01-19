@@ -13,7 +13,4 @@ export default {
     navigationBarTitleText: '满满打车',
     navigationBarTextStyle: 'black'
   },
-  defineConstants: {
-    LOCATION_APIKEY: JSON.stringify('FDLBZ-45FKG-SOVQ6-IRCA6-PGYJ5-5IBXY')
-  },
 }

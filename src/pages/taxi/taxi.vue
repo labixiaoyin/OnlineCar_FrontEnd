@@ -140,12 +140,13 @@ import {
   set as setGlobalData,
   get as getGlobalData,
 } from "../../utils/global_data";
+import { baseUrl } from "../../utils/baseurl"
 const mapCtx = Taro.createMapContext("map");
 export default {
   data() {
     return {
       // status代表状态 0：打车前；1：等待司机接单；2：司机接单后到达前；3：司机到达后
-      status: 4,
+      status: 0,
       latitude: 23.099994,
       longitude: 113.32452,
       markers: [
@@ -183,6 +184,8 @@ export default {
   },
   onLoad() {
     this.toCurrent();
+    this.getCurrentUser();
+    console.log("baseUrl", baseUrl);
   },
   methods: {
     toProfile() {
@@ -195,6 +198,20 @@ export default {
           url: "/pages/profile/profile",
         });
       }
+    },
+    getCurrentUser(){
+      const token = getGlobalData('token')
+      Taro.request({
+        url: baseUrl+'travel/passenger/currentPAX',
+        method: 'GET',
+        header:{
+          'Authorization': token
+        }
+      })
+      .then((res)=>{
+        console.log(res.data);
+        setGlobalData('isLogin', true)
+      })
     },
     // 移动区域 type: begin/end
     regionchange(e) {
@@ -255,7 +272,9 @@ export default {
       // 定时查询查看接单情况
     },
     // 取消订单
-    cancelOrder() {},
+    cancelOrder() {
+      this.status = 0;
+    },
     payMoney(){},
   },
 };
