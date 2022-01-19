@@ -39,7 +39,12 @@
         </view>
         <view class="predict">预估花费：--元</view>
         <view class="confirm">
-          <button class="btn" @tap="confirmOrder">点击确认下单</button>
+          <button class="btn" @tap="confirmOrder" v-show="isClick">
+            点击确认下单
+          </button>
+          <button class="btn" style="background-color: #ccc" v-show="!isClick">
+            点击确认下单
+          </button>
         </view>
       </view>
       <!-- 司机接单前 -->
@@ -59,7 +64,7 @@
           >
         </view>
         <view class="cancel-order">
-          <button class="btn" @tap="cancelOrder">点击取消订单</button>
+          <button class="btn" @tap="cancelOrder">取消订单</button>
         </view>
       </view>
       <!-- 司机接单后到达前 -->
@@ -170,6 +175,8 @@ export default {
       status: 0,
       latitude: 23.099994,
       longitude: 113.32452,
+      passengerId: 1,
+      isClick: false,
       markers: [
         {
           id: 0,
@@ -183,14 +190,14 @@ export default {
       startPlace: {
         address: "起点",
         name: "起点",
-        latitude: 23.099994,
-        longitude: 113.32452,
+        latitude: 0,
+        longitude: 0,
       },
       endPlace: {
         address: "您到哪下车",
         name: "您到哪下车",
-        latitude: 23.099994,
-        longitude: 113.32452,
+        latitude: 0,
+        longitude: 0,
       },
       driver: {
         id: 0,
@@ -229,12 +236,13 @@ export default {
         },
       }).then((res) => {
         console.log(res.data);
+        // this.passengerId = res.data
         // 登录成功，修改登录状态以及用户信息
         if (res.data.success) {
           setGlobalData("isLogin", true);
         } else {
           // 登录失败，清空token并修改登录状态
-          Taro.setStorageSync('token', '');
+          Taro.setStorageSync("token", "");
           setGlobalData("isLogin", false);
         }
       });
@@ -276,6 +284,15 @@ export default {
           that.$set(that.startPlace, "address", res.address);
           that.$set(that.startPlace, "latitude", res.latitude);
           that.$set(that.startPlace, "longitude", res.longitude);
+          if (
+            that.startPlace.latitude != 0 &&
+            that.startPlace.longitude != 0 &&
+            that.endPlace.latitude != 0 &&
+            that.endPlace.longitude != 0
+          ) {
+            that.isClick = true;
+          }
+          console.log("this.isClick", that.isClick);
         },
       });
     },
@@ -288,6 +305,15 @@ export default {
           that.$set(that.endPlace, "address", res.address);
           that.$set(that.endPlace, "latitude", res.latitude);
           that.$set(that.endPlace, "longitude", res.longitude);
+          if (
+            that.startPlace.latitude != 0 &&
+            that.startPlace.longitude != 0 &&
+            that.endPlace.latitude != 0 &&
+            that.endPlace.longitude != 0
+          ) {
+            that.isClick = true;
+          }
+          console.log("this.isClick", that.isClick);
         },
       });
     },
@@ -295,11 +321,36 @@ export default {
     confirmOrder() {
       this.status = 1;
       // 发送下单请求
+      const payload = {
+        passengerId: this.passengerId,
+        beginName: this.startPlace.name,
+        beginLng: this.startPlace.longitude,
+        beginLat: this.startPlace.latitude,
+        endName: this.endPlace.name,
+        endLng: this.endPlace.longitude,
+        endLat: this.endPlace.latitude,
+      };
+      Taro.request({
+        url: "http://10.20.22.39:8686/travel/order/create",
+        method: "POST",
+        data: payload,
+      }).then((res) => {
+        console.log("下单后返回", res.data);
+      });
       // 定时查询查看接单情况
     },
     // 取消订单
     cancelOrder() {
-      this.status = 0;
+      Taro.request({
+        url: "http://10.20.22.39:8686/travel/order/cancel",
+        method: "POST",
+        data: {
+          passengerId: 1,
+        },
+      }).then((res) => {
+        this.status = 0;
+        console.log(res.data);
+      });
     },
     payMoney() {},
   },

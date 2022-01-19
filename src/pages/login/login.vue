@@ -73,28 +73,23 @@ export default {
     login() {
       console.log("请求登录");
       Taro.request({
-        url: baseUrl+"travel/passenger/login",
+        url: baseUrl+"travel/driver/login",
         method: "POST",
         data: {
           account: this.userName,
           password: this.password,
         },
-        // success(res){
-        //   const token = res.data.data
-        //   setGlobalData('token', token)
-        //   Taro.setStorageSync('token', token)
-        //   console.log(res.data);
-        // }
       })
       .then((res) => {
         const token = res.data.data;
         setGlobalData("token", token);
         setGlobalData("isLogin", true)
         Taro.setStorageSync("token", token);
-        Taro.redirectTo({url: '/pages/taxi/taxi'})
+        Taro.redirectTo({url: '/pages/index/index'})
       })
       .catch((err)=>{
         console.log(err);
+        setGlobalData("isLogin", false)
       });
     },
     loginWechat() {
