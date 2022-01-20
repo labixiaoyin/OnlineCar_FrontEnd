@@ -49,9 +49,6 @@ export default {
       password: "",
     };
   },
-  onload(){
-    
-  },
   methods: {
     changeLoginColor(e) {
       this.password = e.target.value;
@@ -71,9 +68,9 @@ export default {
       this.userName = e.target.value;
     },
     login() {
-      console.log("请求登录");
+      console.log("乘客请求登录");
       Taro.request({
-        url: baseUrl+"travel/driver/login",
+        url: baseUrl.passenger+"travel/passenger/login",
         method: "POST",
         data: {
           account: this.userName,
@@ -85,7 +82,7 @@ export default {
         setGlobalData("token", token);
         setGlobalData("isLogin", true)
         Taro.setStorageSync("token", token);
-        Taro.redirectTo({url: '/pages/index/index'})
+        Taro.redirectTo({url: '/pages/taxi/taxi'})
       })
       .catch((err)=>{
         console.log(err);

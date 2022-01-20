@@ -167,16 +167,19 @@ import {
   get as getGlobalData,
 } from "../../utils/global_data";
 import { baseUrl } from "../../utils/baseurl";
-const mapCtx = Taro.createMapContext("map");
+import { taroGet, taroPost } from "../../utils/request";
 export default {
   data() {
     return {
+      // 是否取消订单
+      isCancel: false,
       // status代表状态 0：打车前；1：等待司机接单；2：司机接单后到达前；3：司机到达后
       status: 0,
       latitude: 23.099994,
       longitude: 113.32452,
       passengerId: 1,
       isClick: false,
+      timeId: "",
       markers: [
         {
           id: 0,
@@ -229,7 +232,7 @@ export default {
     getCurrentUser() {
       const token = getGlobalData("token");
       Taro.request({
-        url: baseUrl + "travel/passenger/currentPAX",
+        url: baseUrl.passenger + "travel/passenger/currentPAX",
         method: "GET",
         header: {
           Authorization: token,
@@ -240,6 +243,8 @@ export default {
         // 登录成功，修改登录状态以及用户信息
         if (res.data.success) {
           setGlobalData("isLogin", true);
+          setGlobalData("userInfo", res.data.data);
+          this.passengerId = res.data.data.pkId;
         } else {
           // 登录失败，清空token并修改登录状态
           Taro.setStorageSync("token", "");
@@ -320,6 +325,7 @@ export default {
     // 点击确认下单
     confirmOrder() {
       this.status = 1;
+      this.isCancel = false;
       // 发送下单请求
       const payload = {
         passengerId: this.passengerId,
@@ -331,18 +337,53 @@ export default {
         endLat: this.endPlace.latitude,
       };
       Taro.request({
-        url: "http://10.20.22.39:8686/travel/order/create",
+        url: baseUrl.platform + "travel/order/create",
         method: "POST",
         data: payload,
       }).then((res) => {
         console.log("下单后返回", res.data);
+        // 暂时先这么写，如果存在进行中的订单
+        if (res.data.data == "下单成功") {
+          // 定时查询查看接单情况
+          this.timeId = setInterval(() => {
+            this.getResponse();
+          }, 1000);
+        } else if (res.data.data == "存在进行中的订单") {
+          this.showTips()
+        }
       });
-      // 定时查询查看接单情况
+    },
+    // 查询接单情况
+    getResponse() {
+      console.log("baseUrl.platform", baseUrl.platform);
+      Taro.request({
+        url: baseUrl.platform + "travel/push/passenger",
+        method: "GET",
+        data: {
+          passengerId: this.passengerId,
+        },
+      }).then((res) => {
+        console.log("接单结果", res.data);
+        const data = res.data
+        if (data.success){
+          this.$set(this.driver, 'id', data.data.account)
+          this.$set(this.driver, 'name', data.data.nickname)
+          this.$set(this.driver, 'licenseTag', data.data.carNum)
+          this.$set(this.driver, 'carInfo', data.data.carColor+""+data.data.carBrand)
+          this.status = 2;
+          clearInterval(this.timeId);
+        }
+      });
+    },
+    // 查询到达目的地
+    getIsArrival(){
+      
     },
     // 取消订单
     cancelOrder() {
+      this.isCancel = true;
       Taro.request({
-        url: "http://10.20.22.39:8686/travel/order/cancel",
+        url: baseUrl.platform + "travel/order/cancel",
         method: "POST",
         data: {
           passengerId: 1,
@@ -350,6 +391,21 @@ export default {
       }).then((res) => {
         this.status = 0;
         console.log(res.data);
+      });
+    },
+    // 显示提示框
+    showTips() {
+      var that = this
+      Taro.showModal({
+        title: "提示",
+        content: "您有正在进行中的订单，点击任意按钮取消进行中的订单",
+        success: function (res) {
+          if (res.confirm) {
+            that.cancelOrder();
+          } else if (res.cancel) {
+            that.cancelOrder();
+          }
+        },
       });
     },
     payMoney() {},
