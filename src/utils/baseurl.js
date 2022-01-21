@@ -8,8 +8,10 @@ console.log("process.env.BUILD_ENV", process.env.BUILD_ENV);
 switch (env) {
   case "development":
     baseUrlPrefix = {
-      passenger: "http://10.20.22.252:8686/",
-      driver: "http://10.20.22.135:8686/",
+      // passenger: "http://10.20.22.252:8686/",
+      // driver: "http://10.20.22.135:8686/",
+      passenger: "http://10.20.22.39:8686/",
+      driver: "http://10.20.22.39:8686/",
       platform: "http://10.20.22.39:8686/",
     };
     break;

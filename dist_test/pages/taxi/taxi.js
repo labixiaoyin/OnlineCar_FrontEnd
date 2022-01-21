@@ -50,6 +50,12 @@ component.options.__file = "src/pages/taxi/taxi.vue"
 /* harmony import */ var _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_tarojs_taro__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _utils_global_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/global_data */ "./src/utils/global_data.js");
 /* harmony import */ var _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/baseurl */ "./src/utils/baseurl.js");
+/* harmony import */ var _utils_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/utils */ "./src/utils/utils.js");
+//
+//
+//
+//
+//
 //
 //
 //
@@ -210,14 +216,21 @@ component.options.__file = "src/pages/taxi/taxi.vue"
 
 
 
-var mapCtx = _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.createMapContext("map");
+
 /* harmony default export */ __webpack_exports__["a"] = ({
   data: function data() {
     return {
+      // 是否取消订单
+      isCancel: false,
       // status代表状态 0：打车前；1：等待司机接单；2：司机接单后到达前；3：司机到达后
       status: 0,
       latitude: 23.099994,
       longitude: 113.32452,
+      passengerId: 1,
+      isClick: false,
+      timeId_pick: "",
+      timeId_arrive: "",
+      cost: 0,
       markers: [{
         id: 0,
         iconPath: "",
@@ -229,14 +242,14 @@ var mapCtx = _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.createMapContex
       startPlace: {
         address: "起点",
         name: "起点",
-        latitude: 23.099994,
-        longitude: 113.32452
+        latitude: 0,
+        longitude: 0
       },
       endPlace: {
         address: "您到哪下车",
         name: "您到哪下车",
-        latitude: 23.099994,
-        longitude: 113.32452
+        latitude: 0,
+        longitude: 0
       },
       driver: {
         id: 0,
@@ -266,21 +279,26 @@ var mapCtx = _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.createMapContex
       }
     },
     getCurrentUser: function getCurrentUser() {
+      var _this = this;
+
       var token = Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* get */ "a"])("token");
       _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
-        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"] + "travel/passenger/currentPAX",
+        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].passenger + "travel/passenger/currentPAX",
         method: "GET",
         header: {
           Authorization: token
         }
       }).then(function (res) {
-        console.log(res.data); // 登录成功，修改登录状态以及用户信息
+        console.log(res.data); // this.passengerId = res.data
+        // 登录成功，修改登录状态以及用户信息
 
         if (res.data.success) {
           Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", true);
+          Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("userInfo", res.data.data);
+          _this.passengerId = res.data.data.pkId;
         } else {
           // 登录失败，清空token并修改登录状态
-          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.setStorageSync('token', '');
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.setStorageSync("token", "");
           Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", false);
         }
       });
@@ -322,6 +340,13 @@ var mapCtx = _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.createMapContex
           that.$set(that.startPlace, "address", res.address);
           that.$set(that.startPlace, "latitude", res.latitude);
           that.$set(that.startPlace, "longitude", res.longitude);
+
+          if (that.startPlace.latitude != 0 && that.startPlace.longitude != 0 && that.endPlace.latitude != 0 && that.endPlace.longitude != 0) {
+            that.isClick = true;
+            that.cost = Object(_utils_utils__WEBPACK_IMPORTED_MODULE_4__[/* getCost */ "a"])(that.startPlace.latitude, that.startPlace.longitude, that.endPlace.latitude, that.endPlace.longitude);
+          }
+
+          console.log("this.isClick", that.isClick);
         }
       });
     },
@@ -334,17 +359,142 @@ var mapCtx = _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.createMapContex
           that.$set(that.endPlace, "address", res.address);
           that.$set(that.endPlace, "latitude", res.latitude);
           that.$set(that.endPlace, "longitude", res.longitude);
+
+          if (that.startPlace.latitude != 0 && that.startPlace.longitude != 0 && that.endPlace.latitude != 0 && that.endPlace.longitude != 0) {
+            that.isClick = true;
+            that.cost = Object(_utils_utils__WEBPACK_IMPORTED_MODULE_4__[/* getCost */ "a"])(that.startPlace.latitude, that.startPlace.longitude, that.endPlace.latitude, that.endPlace.longitude);
+          }
+
+          console.log("this.isClick", that.isClick);
         }
       });
     },
     // 点击确认下单
     confirmOrder: function confirmOrder() {
-      this.status = 1; // 发送下单请求
-      // 定时查询查看接单情况
+      var _this2 = this;
+
+      this.status = 1;
+      this.isCancel = false; // 发送下单请求
+
+      var payload = {
+        passengerId: this.passengerId,
+        beginName: this.startPlace.name,
+        beginLng: this.startPlace.longitude,
+        beginLat: this.startPlace.latitude,
+        endName: this.endPlace.name,
+        endLng: this.endPlace.longitude,
+        endLat: this.endPlace.latitude
+      };
+      _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
+        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].platform + "travel/order/create",
+        method: "POST",
+        data: payload
+      }).then(function (res) {
+        console.log("下单后返回", res.data); // 暂时先这么写，如果存在进行中的订单
+
+        if (res.data.data == "下单成功") {
+          // 定时查询查看接单情况
+          clearInterval(_this2.timeId_pick);
+          _this2.timeId_pick = setInterval(function () {
+            _this2.getResponse();
+          }, 2000);
+        } else if (res.data.data == "存在进行中的订单") {
+          _this2.showTips();
+        }
+      });
+    },
+    // 查询接单情况
+    getResponse: function getResponse() {
+      var _this3 = this;
+
+      console.log("baseUrl.platform", _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].platform);
+      _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
+        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].platform + "travel/push/passenger",
+        method: "GET",
+        data: {
+          passengerId: this.passengerId
+        }
+      }).then(function (res) {
+        console.log("接单结果", res.data);
+        var data = res.data;
+
+        if (data.success) {
+          _this3.$set(_this3.driver, "id", data.data.account);
+
+          _this3.$set(_this3.driver, "name", data.data.nickname);
+
+          _this3.$set(_this3.driver, "licenseTag", data.data.carNum);
+
+          _this3.$set(_this3.driver, "avatar", data.data.avatar);
+
+          _this3.$set(_this3.driver, "carInfo", data.data.carColor + "" + data.data.carBrand);
+
+          _this3.status = 3;
+          clearInterval(_this3.timeId_pick);
+          clearInterval(_this3.timeId_arrive);
+          _this3.timeId_arrive = setInterval(function () {
+            _this3.getIsArrival();
+          }, 2000);
+        }
+      });
+    },
+    // 查询到达目的地
+    getIsArrival: function getIsArrival() {
+      var _this4 = this;
+
+      _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
+        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].platform + "travel/push/getCompleteMessage",
+        method: "GET",
+        data: {
+          passengerId: this.passengerId
+        }
+      }).then(function (res) {
+        console.log("完成订单", res.data);
+
+        if (res.data.code == 200) {
+          clearInterval(_this4.timeId_arrive);
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.showToast({
+            title: "订单完成",
+            icon: "success",
+            duration: 2000
+          });
+          _this4.status = 0;
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.redirectTo({
+            url: "/pages/taxi/taxi"
+          });
+        }
+      });
     },
     // 取消订单
     cancelOrder: function cancelOrder() {
-      this.status = 0;
+      var _this5 = this;
+
+      this.isCancel = true;
+      _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
+        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].platform + "travel/order/cancel",
+        method: "POST",
+        data: {
+          passengerId: 1
+        }
+      }).then(function (res) {
+        _this5.status = 0;
+        clearInterval(_this5.timeId_pick);
+      });
+    },
+    // 显示提示框
+    showTips: function showTips() {
+      var that = this;
+      _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.showModal({
+        title: "提示",
+        content: "您有正在进行中的订单，点击任意按钮取消进行中的订单",
+        success: function success(res) {
+          if (res.confirm) {
+            that.cancelOrder();
+          } else if (res.cancel) {
+            that.cancelOrder();
+          }
+        }
+      });
     },
     payMoney: function payMoney() {}
   }
@@ -434,12 +584,41 @@ var render = function () {
                 [_vm._v(_vm._s(_vm.endPlace.name))]
               ),
             ]),
-            _c("view", { staticClass: "predict" }, [_vm._v("预估花费：--元")]),
+            _c("view", { staticClass: "predict" }, [
+              _vm._v("预估花费：" + _vm._s(_vm.cost) + "元"),
+            ]),
             _c("view", { staticClass: "confirm" }, [
               _c(
                 "button",
-                { staticClass: "btn", on: { tap: _vm.confirmOrder } },
-                [_vm._v("点击确认下单")]
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.isClick,
+                      expression: "isClick",
+                    },
+                  ],
+                  staticClass: "btn",
+                  on: { tap: _vm.confirmOrder },
+                },
+                [_vm._v(" 点击确认下单 ")]
+              ),
+              _c(
+                "button",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: !_vm.isClick,
+                      expression: "!isClick",
+                    },
+                  ],
+                  staticClass: "btn",
+                  staticStyle: { "background-color": "#ccc" },
+                },
+                [_vm._v(" 点击确认下单 ")]
               ),
             ]),
           ]
@@ -481,7 +660,7 @@ var render = function () {
               _c(
                 "button",
                 { staticClass: "btn", on: { tap: _vm.cancelOrder } },
-                [_vm._v("点击取消订单")]
+                [_vm._v("取消订单")]
               ),
             ]),
           ]
@@ -711,6 +890,18 @@ module.exports = __webpack_require__.p + "pages/images/toplace.png";
 
 /***/ }),
 
+/***/ "./src/pages/images/usericon.png":
+/*!***************************************!*\
+  !*** ./src/pages/images/usericon.png ***!
+  \***************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "pages/images/usericon.png";
+
+/***/ }),
+
 /***/ "./src/pages/taxi/taxi.less":
 /*!**********************************!*\
   !*** ./src/pages/taxi/taxi.less ***!
@@ -774,6 +965,31 @@ var inst = Page(Object(_tarojs_runtime__WEBPACK_IMPORTED_MODULE_0__["createPageC
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "b", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_taxi_vue_vue_type_template_id_0ed8821b___WEBPACK_IMPORTED_MODULE_0__["b"]; });
 
 
+
+/***/ }),
+
+/***/ "./src/utils/utils.js":
+/*!****************************!*\
+  !*** ./src/utils/utils.js ***!
+  \****************************/
+/*! exports provided: getCost */
+/*! exports used: getCost */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getCost; });
+function getCost(lat1, lng1, lat2, lng2) {
+  var radLat1 = lat1 * Math.PI / 180.0;
+  var radLat2 = lat2 * Math.PI / 180.0;
+  var a = radLat1 - radLat2;
+  var b = lng1 * Math.PI / 180.0 - lng2 * Math.PI / 180.0;
+  var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
+  s = s * 6378.137;
+  s = Math.round(s * 10000) / 10000; // 单位千米
+
+  console.log("距离", s);
+  return s < 3 ? 10.00 : (10 + (s - 3) * 3).toFixed(2);
+}
 
 /***/ })
 

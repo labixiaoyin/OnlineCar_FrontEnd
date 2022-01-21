@@ -97,7 +97,6 @@ component.options.__file = "src/pages/login/login.vue"
       password: ""
     };
   },
-  onload: function onload() {},
   methods: {
     changeLoginColor: function changeLoginColor(e) {
       this.password = e.target.value;
@@ -118,20 +117,14 @@ component.options.__file = "src/pages/login/login.vue"
       this.userName = e.target.value;
     },
     login: function login() {
-      console.log("请求登录");
+      console.log("乘客请求登录");
       _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
-        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"] + "travel/passenger/login",
+        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].passenger + "travel/passenger/login",
         method: "POST",
         data: {
           account: this.userName,
           password: this.password
-        } // success(res){
-        //   const token = res.data.data
-        //   setGlobalData('token', token)
-        //   Taro.setStorageSync('token', token)
-        //   console.log(res.data);
-        // }
-
+        }
       }).then(function (res) {
         var token = res.data.data;
         Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("token", token);
@@ -142,6 +135,7 @@ component.options.__file = "src/pages/login/login.vue"
         });
       }).catch(function (err) {
         console.log(err);
+        Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", false);
       });
     },
     loginWechat: function loginWechat() {

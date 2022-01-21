@@ -37,7 +37,7 @@
             endPlace.name
           }}</text>
         </view>
-        <view class="predict">预估花费：--元</view>
+        <view class="predict">预估花费：{{cost}}元</view>
         <view class="confirm">
           <button class="btn" @tap="confirmOrder" v-show="isClick">
             点击确认下单
@@ -167,7 +167,7 @@ import {
   get as getGlobalData,
 } from "../../utils/global_data";
 import { baseUrl } from "../../utils/baseurl";
-import { taroGet, taroPost } from "../../utils/request";
+import { getCost } from "../../utils/utils";
 export default {
   data() {
     return {
@@ -179,7 +179,9 @@ export default {
       longitude: 113.32452,
       passengerId: 1,
       isClick: false,
-      timeId: "",
+      timeId_pick: "",
+      timeId_arrive: "",
+      cost: 0,
       markers: [
         {
           id: 0,
@@ -296,6 +298,7 @@ export default {
             that.endPlace.longitude != 0
           ) {
             that.isClick = true;
+            that.cost = getCost(that.startPlace.latitude,that.startPlace.longitude,that.endPlace.latitude,that.endPlace.longitude)
           }
           console.log("this.isClick", that.isClick);
         },
@@ -317,6 +320,7 @@ export default {
             that.endPlace.longitude != 0
           ) {
             that.isClick = true;
+            that.cost = getCost(that.startPlace.latitude,that.startPlace.longitude,that.endPlace.latitude,that.endPlace.longitude)
           }
           console.log("this.isClick", that.isClick);
         },
@@ -345,11 +349,12 @@ export default {
         // 暂时先这么写，如果存在进行中的订单
         if (res.data.data == "下单成功") {
           // 定时查询查看接单情况
-          this.timeId = setInterval(() => {
+          clearInterval(this.timeId_pick);
+          this.timeId_pick = setInterval(() => {
             this.getResponse();
-          }, 1000);
+          }, 2000);
         } else if (res.data.data == "存在进行中的订单") {
-          this.showTips()
+          this.showTips();
         }
       });
     },
@@ -364,20 +369,47 @@ export default {
         },
       }).then((res) => {
         console.log("接单结果", res.data);
-        const data = res.data
-        if (data.success){
-          this.$set(this.driver, 'id', data.data.account)
-          this.$set(this.driver, 'name', data.data.nickname)
-          this.$set(this.driver, 'licenseTag', data.data.carNum)
-          this.$set(this.driver, 'carInfo', data.data.carColor+""+data.data.carBrand)
-          this.status = 2;
-          clearInterval(this.timeId);
+        const data = res.data;
+        if (data.success) {
+          this.$set(this.driver, "id", data.data.account);
+          this.$set(this.driver, "name", data.data.nickname);
+          this.$set(this.driver, "licenseTag", data.data.carNum);
+          this.$set(this.driver, "avatar", data.data.avatar);
+          this.$set(
+            this.driver,
+            "carInfo",
+            data.data.carColor + "" + data.data.carBrand
+          );
+          this.status = 3;
+          clearInterval(this.timeId_pick);
+          clearInterval(this.timeId_arrive);
+          this.timeId_arrive = setInterval(() => {
+            this.getIsArrival();
+          }, 2000);
         }
       });
     },
     // 查询到达目的地
-    getIsArrival(){
-      
+    getIsArrival() {
+      Taro.request({
+        url: baseUrl.platform + "travel/push/getCompleteMessage",
+        method: "GET",
+        data: {
+          passengerId: this.passengerId,
+        },
+      }).then((res) => {
+        console.log("完成订单", res.data);
+        if (res.data.code == 200) {
+          clearInterval(this.timeId_arrive);
+          Taro.showToast({
+            title: "订单完成",
+            icon: "success",
+            duration: 2000,
+          });
+          this.status = 0;
+          Taro.redirectTo({url:"/pages/taxi/taxi"})
+        }
+      });
     },
     // 取消订单
     cancelOrder() {
@@ -390,12 +422,12 @@ export default {
         },
       }).then((res) => {
         this.status = 0;
-        console.log(res.data);
+        clearInterval(this.timeId_pick);
       });
     },
     // 显示提示框
     showTips() {
-      var that = this
+      var that = this;
       Taro.showModal({
         title: "提示",
         content: "您有正在进行中的订单，点击任意按钮取消进行中的订单",

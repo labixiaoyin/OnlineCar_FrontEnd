@@ -46,6 +46,7 @@ component.options.__file = "src/pages/profile/profile.vue"
 "use strict";
 /* harmony import */ var _profile_less__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./profile.less */ "./src/pages/profile/profile.less");
 /* harmony import */ var _profile_less__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_profile_less__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_global_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/global_data */ "./src/utils/global_data.js");
 //
 //
 //
@@ -79,7 +80,22 @@ component.options.__file = "src/pages/profile/profile.vue"
 //
 //
 
-/* harmony default export */ __webpack_exports__["a"] = ({});
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  data: function data() {
+    return {
+      userInfo: {
+        account: "",
+        avatar: "../images/usericon.png",
+        nickname: "用户名",
+        pkId: 0
+      }
+    };
+  },
+  onLoad: function onLoad() {
+    this.userInfo = Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_1__[/* get */ "a"])("userInfo");
+  }
+});
 
 /***/ }),
 
@@ -103,10 +119,12 @@ var render = function () {
       _c("view", { staticClass: "avatar" }, [
         _c("image", {
           staticClass: "img",
-          attrs: { src: __webpack_require__(/*! ../images/usericon.png */ "./src/pages/images/usericon.png") },
+          attrs: { src: _vm.userInfo.avatar },
         }),
       ]),
-      _c("view", { staticClass: "username" }, [_vm._v("用户名")]),
+      _c("view", { staticClass: "username" }, [
+        _vm._v(_vm._s(_vm.userInfo.nickname)),
+      ]),
     ]),
     _c("view", { staticClass: "middle" }, [
       _c("view", { staticClass: "item" }, [

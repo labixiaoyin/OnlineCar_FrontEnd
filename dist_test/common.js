@@ -1,17 +1,5 @@
 (wx["webpackJsonp"] = wx["webpackJsonp"] || []).push([["common"],{
 
-/***/ "./src/pages/images/usericon.png":
-/*!***************************************!*\
-  !*** ./src/pages/images/usericon.png ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__.p + "pages/images/usericon.png";
-
-/***/ }),
-
 /***/ "./src/utils/baseurl.js":
 /*!******************************!*\
   !*** ./src/utils/baseurl.js ***!
@@ -22,17 +10,31 @@ module.exports = __webpack_require__.p + "pages/images/usericon.png";
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return baseUrl; });
-var baseUrlPrefix = '';
-var env =  false ? undefined : 'test';
+var baseUrlPrefix = {
+  passenger: "",
+  driver: "",
+  platform: ""
+};
+var env =  false ? undefined : "test";
 console.log("process.env.BUILD_ENV", "test");
 
 switch (env) {
-  case 'development':
-    baseUrlPrefix = "http://10.20.22.252:8686/";
+  case "development":
+    baseUrlPrefix = {
+      // passenger: "http://10.20.22.252:8686/",
+      // driver: "http://10.20.22.135:8686/",
+      passenger: "http://10.20.22.39:8686/",
+      driver: "http://10.20.22.39:8686/",
+      platform: "http://10.20.22.39:8686/"
+    };
     break;
 
-  case 'test':
-    baseUrlPrefix = "http://1.117.227.141:8686/";
+  case "test":
+    baseUrlPrefix = {
+      passenger: "http://1.117.227.141:8686/",
+      driver: "http://1.117.227.141:8686/",
+      platform: "http://1.117.227.141:8686/"
+    };
     break;
 }
 
