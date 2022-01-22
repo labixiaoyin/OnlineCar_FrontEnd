@@ -28,12 +28,12 @@
           <image src="../images/circle.png" style="width: 24px; height: 24px" />
           <text style="padding-left: 10px">{{ startPlace.name }}</text>
         </view>
-        <view class="to">
+        <view class="to" @tap="chooseEnd">
           <image
             src="../images/toplace.png"
             style="width: 24px; height: 24px"
           />
-          <text style="padding-left: 10px" @tap="chooseEnd">{{
+          <text style="padding-left: 10px">{{
             endPlace.name
           }}</text>
         </view>
@@ -295,7 +295,9 @@ export default {
             that.startPlace.latitude != 0 &&
             that.startPlace.longitude != 0 &&
             that.endPlace.latitude != 0 &&
-            that.endPlace.longitude != 0
+            that.endPlace.longitude != 0 &&
+            that.startPlace.name != "" &&
+            that.endPlace.name != ""
           ) {
             that.isClick = true;
             that.cost = getCost(
@@ -322,7 +324,9 @@ export default {
             that.startPlace.latitude != 0 &&
             that.startPlace.longitude != 0 &&
             that.endPlace.latitude != 0 &&
-            that.endPlace.longitude != 0
+            that.endPlace.longitude != 0 &&
+            that.startPlace.name != "" &&
+            that.endPlace.name != ""
           ) {
             that.isClick = true;
             that.cost = getCost(

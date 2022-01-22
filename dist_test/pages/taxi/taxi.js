@@ -341,7 +341,7 @@ component.options.__file = "src/pages/taxi/taxi.vue"
           that.$set(that.startPlace, "latitude", res.latitude);
           that.$set(that.startPlace, "longitude", res.longitude);
 
-          if (that.startPlace.latitude != 0 && that.startPlace.longitude != 0 && that.endPlace.latitude != 0 && that.endPlace.longitude != 0) {
+          if (that.startPlace.latitude != 0 && that.startPlace.longitude != 0 && that.endPlace.latitude != 0 && that.endPlace.longitude != 0 && that.startPlace.name != "" && that.endPlace.name != "") {
             that.isClick = true;
             that.cost = Object(_utils_utils__WEBPACK_IMPORTED_MODULE_4__[/* getCost */ "a"])(that.startPlace.latitude, that.startPlace.longitude, that.endPlace.latitude, that.endPlace.longitude);
           }
@@ -360,7 +360,7 @@ component.options.__file = "src/pages/taxi/taxi.vue"
           that.$set(that.endPlace, "latitude", res.latitude);
           that.$set(that.endPlace, "longitude", res.longitude);
 
-          if (that.startPlace.latitude != 0 && that.startPlace.longitude != 0 && that.endPlace.latitude != 0 && that.endPlace.longitude != 0) {
+          if (that.startPlace.latitude != 0 && that.startPlace.longitude != 0 && that.endPlace.latitude != 0 && that.endPlace.longitude != 0 && that.startPlace.name != "" && that.endPlace.name != "") {
             that.isClick = true;
             that.cost = Object(_utils_utils__WEBPACK_IMPORTED_MODULE_4__[/* getCost */ "a"])(that.startPlace.latitude, that.startPlace.longitude, that.endPlace.latitude, that.endPlace.longitude);
           }
@@ -576,19 +576,14 @@ var render = function () {
                 _vm._v(_vm._s(_vm.startPlace.name)),
               ]),
             ]),
-            _c("view", { staticClass: "to" }, [
+            _c("view", { staticClass: "to", on: { tap: _vm.chooseEnd } }, [
               _c("image", {
                 staticStyle: { width: "24px", height: "24px" },
                 attrs: { src: __webpack_require__(/*! ../images/toplace.png */ "./src/pages/images/toplace.png") },
               }),
-              _c(
-                "text",
-                {
-                  staticStyle: { "padding-left": "10px" },
-                  on: { tap: _vm.chooseEnd },
-                },
-                [_vm._v(_vm._s(_vm.endPlace.name))]
-              ),
+              _c("text", { staticStyle: { "padding-left": "10px" } }, [
+                _vm._v(_vm._s(_vm.endPlace.name)),
+              ]),
             ]),
             _c("view", { staticClass: "predict" }, [
               _vm._v("预估花费：" + _vm._s(_vm.cost) + "元"),
