@@ -126,13 +126,21 @@ component.options.__file = "src/pages/login/login.vue"
           password: this.password
         }
       }).then(function (res) {
-        var token = res.data.data;
-        Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("token", token);
-        Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", true);
-        _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.setStorageSync("token", token);
-        _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.redirectTo({
-          url: '/pages/taxi/taxi'
-        });
+        if (res.data.success) {
+          var token = res.data.data;
+          Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("token", token);
+          Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", true);
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.setStorageSync("token", token);
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.redirectTo({
+            url: "/pages/taxi/taxi"
+          });
+        } else {
+          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.showToast({
+            title: "账户名或密码错误",
+            icon: "none",
+            duration: 2000
+          });
+        }
       }).catch(function (err) {
         console.log(err);
         Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", false);
@@ -145,15 +153,24 @@ component.options.__file = "src/pages/login/login.vue"
         desc: "用于完善用户资料",
         // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
         success: function success(res) {
-          console.log(res);
-          Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("userInfo", res.userInfo);
-          Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", true);
-          _this.userInfo = Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* get */ "a"])("userInfo");
-          _this.isLogin = Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* get */ "a"])("isLogin"); //redirectTo同级跳转，无法返回上一步
+          console.log("res", res);
 
-          _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.redirectTo({
-            url: "/pages/taxi/taxi"
-          });
+          if (res.data.success) {
+            Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("userInfo", res.userInfo);
+            Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* set */ "b"])("isLogin", true);
+            _this.userInfo = Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* get */ "a"])("userInfo");
+            _this.isLogin = Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* get */ "a"])("isLogin"); //redirectTo同级跳转，无法返回上一步
+
+            _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.redirectTo({
+              url: "/pages/taxi/taxi"
+            });
+          } else {
+            _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.showToast({
+              title: "账户名或密码错误",
+              icon: "none",
+              duration: 2000
+            });
+          }
         },
         fail: function fail(err) {
           console.log("获取用户信息失败");

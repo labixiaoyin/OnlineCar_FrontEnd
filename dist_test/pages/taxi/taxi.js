@@ -226,7 +226,7 @@ component.options.__file = "src/pages/taxi/taxi.vue"
       status: 0,
       latitude: 23.099994,
       longitude: 113.32452,
-      passengerId: 1,
+      passengerId: 0,
       isClick: false,
       timeId_pick: "",
       timeId_arrive: "",
@@ -373,35 +373,41 @@ component.options.__file = "src/pages/taxi/taxi.vue"
     confirmOrder: function confirmOrder() {
       var _this2 = this;
 
-      this.status = 1;
-      this.isCancel = false; // 发送下单请求
+      if (Object(_utils_global_data__WEBPACK_IMPORTED_MODULE_2__[/* get */ "a"])("isLogin")) {
+        this.status = 1;
+        this.isCancel = false; // 发送下单请求
 
-      var payload = {
-        passengerId: this.passengerId,
-        beginName: this.startPlace.name,
-        beginLng: this.startPlace.longitude,
-        beginLat: this.startPlace.latitude,
-        endName: this.endPlace.name,
-        endLng: this.endPlace.longitude,
-        endLat: this.endPlace.latitude
-      };
-      _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
-        url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].platform + "travel/order/create",
-        method: "POST",
-        data: payload
-      }).then(function (res) {
-        console.log("下单后返回", res.data); // 暂时先这么写，如果存在进行中的订单
+        var payload = {
+          passengerId: this.passengerId,
+          beginName: this.startPlace.name,
+          beginLng: this.startPlace.longitude,
+          beginLat: this.startPlace.latitude,
+          endName: this.endPlace.name,
+          endLng: this.endPlace.longitude,
+          endLat: this.endPlace.latitude
+        };
+        _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.request({
+          url: _utils_baseurl__WEBPACK_IMPORTED_MODULE_3__[/* baseUrl */ "a"].platform + "travel/order/create",
+          method: "POST",
+          data: payload
+        }).then(function (res) {
+          console.log("下单后返回", res.data); // 暂时先这么写，如果存在进行中的订单
 
-        if (res.data.data == "下单成功") {
-          // 定时查询查看接单情况
-          clearInterval(_this2.timeId_pick);
-          _this2.timeId_pick = setInterval(function () {
-            _this2.getResponse();
-          }, 2000);
-        } else if (res.data.data == "存在进行中的订单") {
-          _this2.showTips();
-        }
-      });
+          if (res.data.data == "下单成功") {
+            // 定时查询查看接单情况
+            clearInterval(_this2.timeId_pick);
+            _this2.timeId_pick = setInterval(function () {
+              _this2.getResponse();
+            }, 2000);
+          } else if (res.data.data == "存在进行中的订单") {
+            _this2.showTips();
+          }
+        });
+      } else {
+        _tarojs_taro__WEBPACK_IMPORTED_MODULE_1___default.a.redirectTo({
+          url: "/pages/login/login"
+        });
+      }
     },
     // 查询接单情况
     getResponse: function getResponse() {

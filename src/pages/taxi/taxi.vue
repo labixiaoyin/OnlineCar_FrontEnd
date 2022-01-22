@@ -37,7 +37,7 @@
             endPlace.name
           }}</text>
         </view>
-        <view class="predict">预估花费：{{cost}}元</view>
+        <view class="predict">预估花费：{{ cost }}元</view>
         <view class="confirm">
           <button class="btn" @tap="confirmOrder" v-show="isClick">
             点击确认下单
@@ -177,7 +177,7 @@ export default {
       status: 0,
       latitude: 23.099994,
       longitude: 113.32452,
-      passengerId: 1,
+      passengerId: 0,
       isClick: false,
       timeId_pick: "",
       timeId_arrive: "",
@@ -298,7 +298,12 @@ export default {
             that.endPlace.longitude != 0
           ) {
             that.isClick = true;
-            that.cost = getCost(that.startPlace.latitude,that.startPlace.longitude,that.endPlace.latitude,that.endPlace.longitude)
+            that.cost = getCost(
+              that.startPlace.latitude,
+              that.startPlace.longitude,
+              that.endPlace.latitude,
+              that.endPlace.longitude
+            );
           }
           console.log("this.isClick", that.isClick);
         },
@@ -320,7 +325,12 @@ export default {
             that.endPlace.longitude != 0
           ) {
             that.isClick = true;
-            that.cost = getCost(that.startPlace.latitude,that.startPlace.longitude,that.endPlace.latitude,that.endPlace.longitude)
+            that.cost = getCost(
+              that.startPlace.latitude,
+              that.startPlace.longitude,
+              that.endPlace.latitude,
+              that.endPlace.longitude
+            );
           }
           console.log("this.isClick", that.isClick);
         },
@@ -328,35 +338,39 @@ export default {
     },
     // 点击确认下单
     confirmOrder() {
-      this.status = 1;
-      this.isCancel = false;
-      // 发送下单请求
-      const payload = {
-        passengerId: this.passengerId,
-        beginName: this.startPlace.name,
-        beginLng: this.startPlace.longitude,
-        beginLat: this.startPlace.latitude,
-        endName: this.endPlace.name,
-        endLng: this.endPlace.longitude,
-        endLat: this.endPlace.latitude,
-      };
-      Taro.request({
-        url: baseUrl.platform + "travel/order/create",
-        method: "POST",
-        data: payload,
-      }).then((res) => {
-        console.log("下单后返回", res.data);
-        // 暂时先这么写，如果存在进行中的订单
-        if (res.data.data == "下单成功") {
-          // 定时查询查看接单情况
-          clearInterval(this.timeId_pick);
-          this.timeId_pick = setInterval(() => {
-            this.getResponse();
-          }, 2000);
-        } else if (res.data.data == "存在进行中的订单") {
-          this.showTips();
-        }
-      });
+      if (getGlobalData("isLogin")) {
+        this.status = 1;
+        this.isCancel = false;
+        // 发送下单请求
+        const payload = {
+          passengerId: this.passengerId,
+          beginName: this.startPlace.name,
+          beginLng: this.startPlace.longitude,
+          beginLat: this.startPlace.latitude,
+          endName: this.endPlace.name,
+          endLng: this.endPlace.longitude,
+          endLat: this.endPlace.latitude,
+        };
+        Taro.request({
+          url: baseUrl.platform + "travel/order/create",
+          method: "POST",
+          data: payload,
+        }).then((res) => {
+          console.log("下单后返回", res.data);
+          // 暂时先这么写，如果存在进行中的订单
+          if (res.data.data == "下单成功") {
+            // 定时查询查看接单情况
+            clearInterval(this.timeId_pick);
+            this.timeId_pick = setInterval(() => {
+              this.getResponse();
+            }, 2000);
+          } else if (res.data.data == "存在进行中的订单") {
+            this.showTips();
+          }
+        });
+      } else {
+        Taro.redirectTo({url: "/pages/login/login"})
+      }
     },
     // 查询接单情况
     getResponse() {
@@ -407,7 +421,7 @@ export default {
             duration: 2000,
           });
           this.status = 0;
-          Taro.redirectTo({url:"/pages/taxi/taxi"})
+          Taro.redirectTo({ url: "/pages/taxi/taxi" });
         }
       });
     },

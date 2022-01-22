@@ -38,7 +38,7 @@ import {
   set as setGlobalData,
   get as getGlobalData,
 } from "../../utils/global_data";
-import {baseUrl} from "../../utils/baseurl"
+import { baseUrl } from "../../utils/baseurl";
 export default {
   data() {
     return {
@@ -70,36 +70,52 @@ export default {
     login() {
       console.log("乘客请求登录");
       Taro.request({
-        url: baseUrl.passenger+"travel/passenger/login",
+        url: baseUrl.passenger + "travel/passenger/login",
         method: "POST",
         data: {
           account: this.userName,
           password: this.password,
         },
       })
-      .then((res) => {
-        const token = res.data.data;
-        setGlobalData("token", token);
-        setGlobalData("isLogin", true)
-        Taro.setStorageSync("token", token);
-        Taro.redirectTo({url: '/pages/taxi/taxi'})
-      })
-      .catch((err)=>{
-        console.log(err);
-        setGlobalData("isLogin", false)
-      });
+        .then((res) => {
+          if (res.data.success) {
+            const token = res.data.data;
+            setGlobalData("token", token);
+            setGlobalData("isLogin", true);
+            Taro.setStorageSync("token", token);
+            Taro.redirectTo({ url: "/pages/taxi/taxi" });
+          } else {
+            Taro.showToast({
+              title: "账户名或密码错误",
+              icon: "none",
+              duration: 2000,
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setGlobalData("isLogin", false);
+        });
     },
     loginWechat() {
       Taro.getUserProfile({
         desc: "用于完善用户资料", // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
         success: (res) => {
-          console.log(res);
-          setGlobalData("userInfo", res.userInfo);
-          setGlobalData("isLogin", true);
-          this.userInfo = getGlobalData("userInfo");
-          this.isLogin = getGlobalData("isLogin");
-          //redirectTo同级跳转，无法返回上一步
-          Taro.redirectTo({ url: "/pages/taxi/taxi" });
+          console.log("res", res);
+          if (res.data.success) {
+            setGlobalData("userInfo", res.userInfo);
+            setGlobalData("isLogin", true);
+            this.userInfo = getGlobalData("userInfo");
+            this.isLogin = getGlobalData("isLogin");
+            //redirectTo同级跳转，无法返回上一步
+            Taro.redirectTo({ url: "/pages/taxi/taxi" });
+          } else {
+            Taro.showToast({
+              title: "账户名或密码错误",
+              icon: "none",
+              duration: 2000,
+            });
+          }
         },
         fail: (err) => {
           console.log("获取用户信息失败");
