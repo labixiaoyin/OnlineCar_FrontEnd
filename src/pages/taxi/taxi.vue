@@ -33,9 +33,7 @@
             src="../images/toplace.png"
             style="width: 24px; height: 24px"
           />
-          <text style="padding-left: 10px">{{
-            endPlace.name
-          }}</text>
+          <text style="padding-left: 10px">{{ endPlace.name }}</text>
         </view>
         <view class="predict">预估花费：{{ cost }}元</view>
         <view class="confirm">
@@ -84,7 +82,7 @@
           </view>
           <view class="img-info">
             <image
-              :src="driver.avatar"
+              :src="driver.avatar?driver.avatar:'../images/usericon.png'"
               style="width: 50px; height: 50px; border-radius: 50%"
             />
           </view>
@@ -373,7 +371,7 @@ export default {
           }
         });
       } else {
-        Taro.redirectTo({url: "/pages/login/login"})
+        Taro.redirectTo({ url: "/pages/login/login" });
       }
     },
     // 查询接单情况
@@ -439,6 +437,7 @@ export default {
           passengerId: 1,
         },
       }).then((res) => {
+        console.log("点击取消订单", res.data);
         this.status = 0;
         clearInterval(this.timeId_pick);
       });

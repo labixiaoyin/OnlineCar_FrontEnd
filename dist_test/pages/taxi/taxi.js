@@ -210,8 +210,6 @@ component.options.__file = "src/pages/taxi/taxi.vue"
 //
 //
 //
-//
-//
 
 
 
@@ -483,6 +481,7 @@ component.options.__file = "src/pages/taxi/taxi.vue"
           passengerId: 1
         }
       }).then(function (res) {
+        console.log("点击取消订单", res.data);
         _this5.status = 0;
         clearInterval(_this5.timeId_pick);
       });
@@ -715,7 +714,11 @@ var render = function () {
                     height: "50px",
                     "border-radius": "50%",
                   },
-                  attrs: { src: _vm.driver.avatar },
+                  attrs: {
+                    src: _vm.driver.avatar
+                      ? _vm.driver.avatar
+                      : "../images/usericon.png",
+                  },
                 }),
               ]),
             ]),
